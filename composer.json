@@ -1,0 +1,17 @@
+{
+    "name": "snapshotpl/zf-config-listener",
+    "require": {
+        "php": ">=5.5",
+        "zendframework/zend-modulemanager": "^2.4",
+        "zendframework/zend-servicemanager": "^2.4",
+        "zendframework/zend-eventmanager": "^2.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZfConfigListener\\": "src/"
+        }
+    }
+}
