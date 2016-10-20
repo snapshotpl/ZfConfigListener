@@ -1,25 +1,31 @@
 <?php
 
+namespace ZfConfigListenerTest;
+
+use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_TestCase;
+use RuntimeException;
+use stdClass;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use ZfConfigListener\AttachDelegator;
 
 class AttachDelegatorTest extends PHPUnit_Framework_TestCase
 {
+
     private $delegator;
-    private $serviceLocator;
+    private $container;
 
     protected function setUp()
     {
         $this->delegator = new AttachDelegator();
-        $this->serviceLocator = $this->getMock(ServiceLocatorInterface::class);
+        $this->container = $this->getMockBuilder(ContainerInterface::class)->getMock();
     }
 
     public function testThrowExceptionIfServiceNotConfigured()
     {
-        $this->serviceLocator->method('get')->willReturnMap([
+        $this->container->method('get')->willReturnMap([
             [
                 'Config',
                 [
@@ -28,11 +34,11 @@ class AttachDelegatorTest extends PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $eventManagerAware = $this->getMock(EventManagerAwareInterface::class);
+        $eventManagerAware = $this->getMockBuilder(EventManagerAwareInterface::class)->getMock();
 
         $this->setExpectedException(RuntimeException::class);
 
-        $this->delegator->createDelegatorWithName($this->serviceLocator, 'boo', 'boo', function() use ($eventManagerAware) {
+        $this->delegator->__invoke($this->container, 'boo', function() use ($eventManagerAware) {
             return $eventManagerAware;
         });
     }
@@ -41,36 +47,36 @@ class AttachDelegatorTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(RuntimeException::class);
 
-        $this->delegator->createDelegatorWithName($this->serviceLocator, 'boo', 'boo', function() {
+        $this->delegator->__invoke($this->container, 'boo', function() {
             return new stdClass();
         });
     }
 
     public function testAttachListener()
     {
-        $listener = $this->getMock(ListenerAggregateInterface::class);
+        $listener = $this->getMockBuilder(ListenerAggregateInterface::class)->getMock();
 
-        $this->serviceLocator->method('get')->willReturnMap([
-            [
-                'Config',
-                [
-                    'listeners_config' => [
-                        'boo' => ['foo']
-                    ],
+        $config = [
+            'listeners_config' => [
+                'boo' => [
+                    'foo',
                 ],
             ],
-            [
-                'foo',
-                $listener,
-            ]
-        ]);
+        ];
 
-        $eventManager = $this->getMock(EventManagerInterface::class);
+        $returnMap = [
+                ['Config', $config],
+                ['foo', $listener],
+        ];
 
-        $eventManagerAware = $this->getMock(EventManagerAwareInterface::class);
+        $this->container->method('get')->willReturnMap($returnMap);
+
+        $eventManager = $this->getMockBuilder(EventManagerInterface::class)->getMock();
+
+        $eventManagerAware = $this->getMockBuilder(EventManagerAwareInterface::class)->getMock();
         $eventManagerAware->method('getEventManager')->willReturn($eventManager);
 
-        $result = $this->delegator->createDelegatorWithName($this->serviceLocator, 'boo', 'boo', function() use ($eventManagerAware) {
+        $result = $this->delegator->__invoke($this->container, 'boo', function() use ($eventManagerAware) {
             return $eventManagerAware;
         });
 
