@@ -19,7 +19,7 @@ class AttachDelegatorTest extends PHPUnit_Framework_TestCase
 
     public function testThrowExceptionIfServiceNotConfigured()
     {
-        $this->serviceLocator->expects($this->once())->method('get')->willReturnMap([
+        $this->serviceLocator->method('get')->willReturnMap([
             [
                 'Config',
                 [
@@ -29,7 +29,6 @@ class AttachDelegatorTest extends PHPUnit_Framework_TestCase
         ]);
 
         $eventManagerAware = $this->getMock(EventManagerAwareInterface::class);
-        $eventManagerAware->expects($this->never())->method('getEventManager');
 
         $this->setExpectedException(RuntimeException::class);
 
@@ -67,7 +66,6 @@ class AttachDelegatorTest extends PHPUnit_Framework_TestCase
         ]);
 
         $eventManager = $this->getMock(EventManagerInterface::class);
-        $eventManager->method('attach')->with($listener);
 
         $eventManagerAware = $this->getMock(EventManagerAwareInterface::class);
         $eventManagerAware->method('getEventManager')->willReturn($eventManager);
