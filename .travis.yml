@@ -6,12 +6,17 @@ php:
   - 7.0
   - hhvm
 
+env:
+  - DEPS=lowest
+  - DEPS=latest
+
 before_script:
   - composer self-update
-  - composer install --no-interaction --prefer-source --dev
+  - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --prefer-lowest --prefer-stable --no-interaction ; fi
+  - travis_retry composer install --no-interaction
 
 script:
-  - phpunit
+  - composer test
 
 matrix:
   fast_finish: true

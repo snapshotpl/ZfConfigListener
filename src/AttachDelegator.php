@@ -2,14 +2,21 @@
 
 namespace ZfConfigListener;
 
+use Interop\Container\ContainerInterface;
 use RuntimeException;
 use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\ListenerAggregateInterface;
 use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class AttachDelegator implements DelegatorFactoryInterface
 {
     public function createDelegatorWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName, $callback)
+    {
+        return $this($serviceLocator, $requestedName, $callback);
+    }
+
+    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
     {
         $eventManagerAware = $callback();
 
@@ -21,18 +28,18 @@ class AttachDelegator implements DelegatorFactoryInterface
             ));
         }
 
-        $listenersConfig = $serviceLocator->get('Config')['listeners_config'];
+        $listenersConfig = $container->get('Config')['listeners_config'];
 
-        if (isset($listenersConfig[$requestedName]) && is_array($listenersConfig[$requestedName]) && !empty($listenersConfig[$requestedName])) {
+        if (isset($listenersConfig[$name]) && is_array($listenersConfig[$name]) && !empty($listenersConfig[$name])) {
             $eventManager = $eventManagerAware->getEventManager();
 
-            foreach ($listenersConfig[$requestedName] as $listenerName) {
-                $listener = $serviceLocator->get($listenerName);
-                $eventManager->attach($listener);
+            foreach ($listenersConfig[$name] as $listenerName) {
+                /* @var $listener ListenerAggregateInterface */
+                $listener = $container->get($listenerName);
+                $listener->attach($eventManager);
             }
-        } else {
-            throw new RuntimeException(sprintf('%s has not configured any listener', $requestedName));
+            return $eventManagerAware;
         }
-        return $eventManagerAware;
+        throw new RuntimeException(sprintf('%s has not configured any listener', $name));
     }
 }
