@@ -13,5 +13,8 @@
         "psr-4": {
             "ZfConfigListener\\": "src/"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
