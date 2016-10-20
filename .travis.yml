@@ -24,6 +24,7 @@ matrix:
 
 before_script:
   - composer self-update
+  - phpenv config-rm xdebug.ini
   - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --prefer-lowest --prefer-stable --no-interaction ; fi
   - travis_retry composer install --no-interaction
 
