@@ -9,7 +9,7 @@ use Zend\EventManager\ListenerAggregateInterface;
 use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class AttachDelegator implements DelegatorFactoryInterface
+final class AttachEventDelegator implements DelegatorFactoryInterface
 {
     public function createDelegatorWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName, $callback)
     {
