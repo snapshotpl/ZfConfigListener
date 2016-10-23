@@ -1,15 +1,22 @@
 # ZfConfigListener [![Build Status](https://travis-ci.org/snapshotpl/ZfConfigListener.svg?branch=master)](https://travis-ci.org/snapshotpl/ZfConfigListener)
-Attach any ZF2 listener using configuration
+
+Attach any Zend Framework Event Manager listener using configuration
 
 ## Usage
 
-Example:
-You want to attach `my-listener` and `module-listener` to `my-service` service with event manager. You need to configure listener:
+If you want to attach `my-listener` and `module-listener` to `my-service` service with event manager, you need to configure listener:
 
 ```php
 <?php
 
 return [
+    'service_manager' => [
+        'factories' => [
+            'my-service' => MyServiceFactory::class,
+            'my-listener' => MyListenerFactory::class,
+            'module-listener' => ModuleListenerFactory::class,
+        ],
+    ],
     'listeners_config' => [
         'my-service' => [
             'my-listener',
@@ -19,16 +26,10 @@ return [
 ];
 ```
 
-And enable delegator to `my-service`:
+## Installation
 
-```php
-return [
-    'service_manager' => [
-        'decorators' => [
-            'my-service' => [
-                ZfConfigListener\AttachDelegator::class,
-            ],
-        ],
-    ],
-];
 ```
+composer require snapshotpl/zf-config-listener
+```
+
+add add `ZfConfigListener` module to application's configuration.

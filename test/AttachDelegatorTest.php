@@ -9,9 +9,9 @@ use stdClass;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
-use ZfConfigListener\AttachDelegator;
+use ZfConfigListener\AttachEventDelegator;
 
-class AttachDelegatorTest extends PHPUnit_Framework_TestCase
+class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
 {
 
     private $delegator;
@@ -19,7 +19,7 @@ class AttachDelegatorTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->delegator = new AttachDelegator();
+        $this->delegator = new AttachEventDelegator();
         $this->container = $this->getMockBuilder(ContainerInterface::class)->getMock();
     }
 
