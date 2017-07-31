@@ -2,9 +2,9 @@
     "name": "snapshotpl/zf-config-listener",
     "require": {
         "php": "^5.5 || ^7.0",
-        "zendframework/zend-modulemanager": "^2.4",
-        "zendframework/zend-servicemanager": "^2.6 || ^3.0",
-        "zendframework/zend-eventmanager": "^2.4 || ^3.0"
+        "zendframework/zend-modulemanager": "^2.8",
+        "zendframework/zend-servicemanager": "^3.3",
+        "zendframework/zend-eventmanager": "^3.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8"
