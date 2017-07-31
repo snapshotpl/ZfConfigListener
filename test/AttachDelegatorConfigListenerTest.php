@@ -2,14 +2,14 @@
 
 namespace ZfConfigListenerTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use Zend\ModuleManager\Listener\ConfigListener;
 use Zend\ModuleManager\ModuleEvent;
 use ZfConfigListener\AttachDelegatorConfigListener;
 use ZfConfigListener\AttachEventDelegator;
 
-class AttachDelegatorConfigListenerTest extends PHPUnit_Framework_TestCase
+class AttachDelegatorConfigListenerTest extends TestCase
 {
     public function testAttachDelegatorToServiceWithoutDelegators()
     {

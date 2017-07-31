@@ -2,7 +2,7 @@
 
 namespace ZfConfigListenerTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
 use Zend\EventManager\EventManagerAwareInterface;
@@ -11,7 +11,7 @@ use Zend\EventManager\ListenerAggregateInterface;
 use Zend\ServiceManager\ServiceManager;
 use ZfConfigListener\AttachEventDelegator;
 
-class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
+class AttachEventDelegatorTest extends TestCase
 {
     private $delegator;
 
@@ -28,9 +28,9 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $eventManagerAware = $this->getMock(EventManagerAwareInterface::class);
+        $eventManagerAware = $this->createMock(EventManagerAwareInterface::class);
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->delegator->__invoke($container, 'boo', function() use ($eventManagerAware) {
             return $eventManagerAware;
@@ -39,7 +39,7 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
 
     public function testThrowExceptionIfServiceNotEventManagerAware()
     {
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->delegator->__invoke($this->createContainer([]), 'boo', function() {
             return new stdClass();
@@ -49,7 +49,7 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
     public function testAttachListener()
     {
         $attached = false;
-        $listener = $this->getMock(ListenerAggregateInterface::class);
+        $listener = $this->createMock(ListenerAggregateInterface::class);
         $listener->method('attach')->willReturnCallback(function() use (&$attached) {
             $attached = true;
         });
@@ -65,9 +65,9 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
             'foo' => $listener,
         ]);
 
-        $eventManager = $this->getMockBuilder(EventManagerInterface::class)->getMock();
+        $eventManager = $this->createMock(EventManagerInterface::class);
 
-        $eventManagerAware = $this->getMockBuilder(EventManagerAwareInterface::class)->getMock();
+        $eventManagerAware = $this->createMock(EventManagerAwareInterface::class);
         $eventManagerAware->method('getEventManager')->willReturn($eventManager);
 
         $this->delegator->__invoke($container, 'boo', function() use ($eventManagerAware) {
@@ -80,7 +80,7 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
     public function testAttachListenerUsingDuckType()
     {
         $attached = false;
-        $listener = $this->getMock(ListenerAggregateInterface::class);
+        $listener = $this->createMock(ListenerAggregateInterface::class);
         $listener->method('attach')->willReturnCallback(function() use (&$attached) {
             $attached = true;
         });
@@ -96,7 +96,7 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
             'foo' => $listener,
         ]);
 
-        $eventManager = $this->getMockBuilder(EventManagerInterface::class)->getMock();
+        $eventManager = $this->createMock(EventManagerInterface::class);
 
         $eventManagerAwareDuckTyped = new EventManagerAwareClassDuckTyped($eventManager);
 
