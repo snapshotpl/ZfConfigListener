@@ -2,84 +2,113 @@
 
 namespace ZfConfigListenerTest;
 
-use Interop\Container\ContainerInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
+use Zend\ServiceManager\ServiceManager;
 use ZfConfigListener\AttachEventDelegator;
 
-class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
+class AttachEventDelegatorTest extends TestCase
 {
-
     private $delegator;
-    private $container;
 
     protected function setUp()
     {
         $this->delegator = new AttachEventDelegator();
-        $this->container = $this->getMockBuilder(ContainerInterface::class)->getMock();
     }
 
     public function testThrowExceptionIfServiceNotConfigured()
     {
-        $this->container->method('get')->willReturnMap([
-            [
-                'Config',
-                [
-                    'listeners_config' => [],
-                ],
+        $container = $this->createContainer([
+            'Config' => [
+                'listeners_config' => [],
             ],
         ]);
 
-        $eventManagerAware = $this->getMockBuilder(EventManagerAwareInterface::class)->getMock();
+        $eventManagerAware = $this->createMock(EventManagerAwareInterface::class);
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
-        $this->delegator->__invoke($this->container, 'boo', function() use ($eventManagerAware) {
+        $this->delegator->__invoke($container, 'boo', function() use ($eventManagerAware) {
             return $eventManagerAware;
         });
     }
 
     public function testThrowExceptionIfServiceNotEventManagerAware()
     {
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
-        $this->delegator->__invoke($this->container, 'boo', function() {
+        $this->delegator->__invoke($this->createContainer([]), 'boo', function() {
             return new stdClass();
         });
     }
 
     public function testAttachListener()
     {
-        $listener = $this->getMockBuilder(ListenerAggregateInterface::class)->getMock();
+        $attached = false;
+        $listener = $this->createMock(ListenerAggregateInterface::class);
+        $listener->method('attach')->willReturnCallback(function() use (&$attached) {
+            $attached = true;
+        });
 
-        $config = [
-            'listeners_config' => [
-                'boo' => [
-                    'foo',
+        $container = $this->createContainer([
+            'Config' => [
+                'listeners_config' => [
+                    'boo' => [
+                        'foo',
+                    ],
                 ],
             ],
-        ];
+            'foo' => $listener,
+        ]);
 
-        $returnMap = [
-                ['Config', $config],
-                ['foo', $listener],
-        ];
+        $eventManager = $this->createMock(EventManagerInterface::class);
 
-        $this->container->method('get')->willReturnMap($returnMap);
-
-        $eventManager = $this->getMockBuilder(EventManagerInterface::class)->getMock();
-
-        $eventManagerAware = $this->getMockBuilder(EventManagerAwareInterface::class)->getMock();
+        $eventManagerAware = $this->createMock(EventManagerAwareInterface::class);
         $eventManagerAware->method('getEventManager')->willReturn($eventManager);
 
-        $result = $this->delegator->__invoke($this->container, 'boo', function() use ($eventManagerAware) {
+        $this->delegator->__invoke($container, 'boo', function() use ($eventManagerAware) {
             return $eventManagerAware;
         });
 
-        $this->assertSame($eventManagerAware, $result);
+        $this->assertTrue($attached);
+    }
+
+    public function testAttachListenerUsingDuckType()
+    {
+        $attached = false;
+        $listener = $this->createMock(ListenerAggregateInterface::class);
+        $listener->method('attach')->willReturnCallback(function() use (&$attached) {
+            $attached = true;
+        });
+
+        $container = $this->createContainer([
+            'Config' => [
+                'listeners_config' => [
+                    'boo' => [
+                        'foo',
+                    ],
+                ],
+            ],
+            'foo' => $listener,
+        ]);
+
+        $eventManager = $this->createMock(EventManagerInterface::class);
+
+        $eventManagerAwareDuckTyped = new EventManagerAwareClassDuckTyped($eventManager);
+
+        $this->delegator->__invoke($container, 'boo', function() use ($eventManagerAwareDuckTyped) {
+            return $eventManagerAwareDuckTyped;
+        });
+
+        $this->assertTrue($attached);
+    }
+
+    private function createContainer(array $services)
+    {
+        return new ServiceManager(['services' => $services]);
     }
 }

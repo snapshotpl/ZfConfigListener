@@ -6,23 +6,17 @@ use Interop\Container\ContainerInterface;
 use RuntimeException;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\DelegatorFactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 final class AttachEventDelegator implements DelegatorFactoryInterface
 {
-    public function createDelegatorWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName, $callback)
-    {
-        return $this($serviceLocator, $requestedName, $callback);
-    }
-
     public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
     {
         $eventManagerAware = $callback();
 
-        if (!$eventManagerAware instanceof EventManagerAwareInterface) {
+        if (!$eventManagerAware instanceof EventManagerAwareInterface && !method_exists($eventManagerAware, 'getEventManager')) {
             throw new RuntimeException(sprintf(
-                '%s must implements %s',
+                '%s must implements %s or contains getEventManager method',
                 get_class($eventManagerAware),
                 EventManagerAwareInterface::class
             ));
