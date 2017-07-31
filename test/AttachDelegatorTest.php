@@ -77,6 +77,36 @@ class AttachEventDelegatorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($attached);
     }
 
+    public function testAttachListenerUsingDuckType()
+    {
+        $attached = false;
+        $listener = $this->getMock(ListenerAggregateInterface::class);
+        $listener->method('attach')->willReturnCallback(function() use (&$attached) {
+            $attached = true;
+        });
+
+        $container = $this->createContainer([
+            'Config' => [
+                'listeners_config' => [
+                    'boo' => [
+                        'foo',
+                    ],
+                ],
+            ],
+            'foo' => $listener,
+        ]);
+
+        $eventManager = $this->getMockBuilder(EventManagerInterface::class)->getMock();
+
+        $eventManagerAwareDuckTyped = new EventManagerAwareClassDuckTyped($eventManager);
+
+        $this->delegator->__invoke($container, 'boo', function() use ($eventManagerAwareDuckTyped) {
+            return $eventManagerAwareDuckTyped;
+        });
+
+        $this->assertTrue($attached);
+    }
+
     private function createContainer(array $services)
     {
         return new ServiceManager(['services' => $services]);

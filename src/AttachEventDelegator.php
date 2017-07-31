@@ -14,9 +14,9 @@ final class AttachEventDelegator implements DelegatorFactoryInterface
     {
         $eventManagerAware = $callback();
 
-        if (!$eventManagerAware instanceof EventManagerAwareInterface) {
+        if (!$eventManagerAware instanceof EventManagerAwareInterface && !method_exists($eventManagerAware, 'getEventManager')) {
             throw new RuntimeException(sprintf(
-                '%s must implements %s',
+                '%s must implements %s or contains getEventManager method',
                 get_class($eventManagerAware),
                 EventManagerAwareInterface::class
             ));
