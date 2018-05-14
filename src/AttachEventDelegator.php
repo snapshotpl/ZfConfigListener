@@ -6,7 +6,8 @@ use Interop\Container\ContainerInterface;
 use RuntimeException;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
+use Zend\ServiceManager\DelegatorFactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 final class AttachEventDelegator implements DelegatorFactoryInterface
 {
@@ -35,5 +36,10 @@ final class AttachEventDelegator implements DelegatorFactoryInterface
             return $eventManagerAware;
         }
         throw new RuntimeException(sprintf('%s has not configured any listener', $name));
+    }
+
+    public function createDelegatorWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName, $callback)
+    {
+        return $this($serviceLocator, $requestedName, $callback);
     }
 }
