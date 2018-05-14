@@ -8,6 +8,8 @@ use stdClass;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
+use Zend\ServiceManager\Config;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceManager;
 use ZfConfigListener\AttachEventDelegator;
 
@@ -109,6 +111,8 @@ class AttachEventDelegatorTest extends TestCase
 
     private function createContainer(array $services)
     {
-        return new ServiceManager(['services' => $services]);
+        $config = new Config(['services' => $services]);
+
+        return new ServiceManager(interface_exists(FactoryInterface::class) ? $config->toArray() : $config);
     }
 }
