@@ -5,17 +5,17 @@ namespace ZfConfigListenerTest;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\EventManager\EventManagerAwareInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use Laminas\ServiceManager\ServiceManager;
 use ZfConfigListener\AttachEventDelegator;
 
 class AttachEventDelegatorTest extends TestCase
 {
     private $delegator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->delegator = new AttachEventDelegator();
     }

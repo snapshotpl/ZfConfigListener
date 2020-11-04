@@ -2,7 +2,7 @@
 
 namespace ZfConfigListenerTest;
 
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class EventManagerAwareClassDuckTyped
 {

@@ -1,1 +1,3 @@
 /nbproject/private/
+.phpunit.result.cache
+composer.lock

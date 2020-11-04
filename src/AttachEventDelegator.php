@@ -4,9 +4,9 @@ namespace ZfConfigListener;
 
 use Interop\Container\ContainerInterface;
 use RuntimeException;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
+use Laminas\EventManager\EventManagerAwareInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 
 final class AttachEventDelegator implements DelegatorFactoryInterface
 {
