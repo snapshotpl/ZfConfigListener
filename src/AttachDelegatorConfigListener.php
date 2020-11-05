@@ -2,9 +2,9 @@
 
 namespace ZfConfigListener;
 
-use Zend\EventManager\AbstractListenerAggregate;
-use Zend\EventManager\EventManagerInterface;
-use Zend\ModuleManager\ModuleEvent;
+use Laminas\EventManager\AbstractListenerAggregate;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\ModuleManager\ModuleEvent;
 
 final class AttachDelegatorConfigListener extends AbstractListenerAggregate
 {

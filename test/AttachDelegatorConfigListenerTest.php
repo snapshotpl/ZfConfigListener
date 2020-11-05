@@ -4,8 +4,8 @@ namespace ZfConfigListenerTest;
 
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Zend\ModuleManager\Listener\ConfigListener;
-use Zend\ModuleManager\ModuleEvent;
+use Laminas\ModuleManager\Listener\ConfigListener;
+use Laminas\ModuleManager\ModuleEvent;
 use ZfConfigListener\AttachDelegatorConfigListener;
 use ZfConfigListener\AttachEventDelegator;
 
